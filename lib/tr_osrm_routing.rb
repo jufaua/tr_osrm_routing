@@ -123,6 +123,10 @@ module TrOSRMRouting
         routing["query"] = routing_query
         return routing
         
+      else
+        
+        return {:status => failed, :query => routing_query}
+        
       end
       
       return nil
