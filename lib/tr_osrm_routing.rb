@@ -125,7 +125,7 @@ module TrOSRMRouting
         
       else
         
-        return {:status => failed, :query => routing_query}
+        return {"status" => "failed", "query" => routing_query}
         
       end
       
