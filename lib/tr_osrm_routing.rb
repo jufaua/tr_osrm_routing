@@ -120,6 +120,7 @@ module TrOSRMRouting
       #ap routing
       if routing && (routing["status"] || routing["stops"])
         
+        routing["query"] = routing_query
         return routing
         
       end
