@@ -27,6 +27,7 @@ module TrOSRMRouting
       :match_radius                => 20,
       :transfer_penalty_minutes    => 0,
       :only_service_ids            => nil,
+      :by_number_of_transfers      => false,
       :max_travel_time_minutes     => nil,
       :max_access_travel_time_seconds   => 1200,
       :max_egress_travel_time_seconds   => 1200,
@@ -103,14 +104,15 @@ module TrOSRMRouting
       max_travel_time_minutes          = options[:max_travel_time_minutes] || 9999
       max_number_of_transfers          = options[:max_number_of_transfers]
       only_service_ids                 = options[:only_service_ids]
+      by_num_transfers                 = options[:by_number_of_transfers]
       transfer_penalty_minutes         = options[:transfer_penalty_minutes] || 0
       max_access_travel_time_minutes   = options[:max_access_travel_time_seconds]   ? (options[:max_access_travel_time_seconds].to_f   / 60).ceil : 20
       max_egress_travel_time_minutes   = options[:max_egress_travel_time_seconds]   ? (options[:max_egress_travel_time_seconds].to_f   / 60).ceil : max_access_travel_time_minutes
       max_transfer_travel_time_minutes = options[:max_transfer_travel_time_seconds] ? (options[:max_transfer_travel_time_seconds].to_f / 60).ceil : 20
       if options[:starting_stop_id]
-        routing_query = "#{api_url}?starting_stop_id=#{options[:starting_stop_id]}&destination=#{destination_geography ? destination_geography.lat : 0},#{destination_geography ? destination_geography.lon : 0}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
+        routing_query = "#{api_url}?starting_stop_id=#{options[:starting_stop_id]}&destination=#{destination_geography ? destination_geography.lat : 0},#{destination_geography ? destination_geography.lon : 0}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&by_num_transfers=#{by_num_transfers ? 'true' : 'false' }&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
       elsif geographies.any?
-        routing_query = "#{api_url}?origin=#{origin_geography.lat},#{origin_geography.lon}&destination=#{destination_geography.lat},#{destination_geography.lon}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
+        routing_query = "#{api_url}?origin=#{origin_geography.lat},#{origin_geography.lon}&destination=#{destination_geography.lat},#{destination_geography.lon}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&by_num_transfers=#{by_num_transfers ? 'true' : 'false' }&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
       else
         raise "no geographies provided"
       end
