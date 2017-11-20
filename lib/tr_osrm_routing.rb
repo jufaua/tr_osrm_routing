@@ -18,7 +18,7 @@ module TrOSRMRouting
       :departure_time              => nil, #"00:00"
       :arrival_time                => nil,   #"00:00"
       :od_trips                    => false, # is true, trRouting will calculate travel time for each od trips (if its cache include od trips)
-      :od_trips_period             => nil, # to use for od trips
+      :od_trips_periods            => nil, # to use for od trips
       :od_trips_activities         => nil, # to use for od trips
       :od_trips_age_groups         => nil, # to use for od trips
       :od_trips_genders            => nil, # to use for od trips
@@ -134,8 +134,8 @@ module TrOSRMRouting
         query_parameters_array.push "&only_service_ids=#{options[:only_service_ids].join(',')}"
       end
       
-      if options[:od_trips_period] && options[:od_trips_period].any?
-        query_parameters_array.push "&od_trips_period=#{options[:od_trips_period].join(',')}"
+      if options[:od_trips_periods] && options[:od_trips_periods].any?
+        query_parameters_array.push "&od_trips_periods=#{options[:od_trips_periods].join(',')}"
       end
       
       if options[:od_trips_activities] && options[:od_trips_activities].any?
