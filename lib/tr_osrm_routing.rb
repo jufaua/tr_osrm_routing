@@ -17,6 +17,13 @@ module TrOSRMRouting
       :arrival_date                => nil,   #"0000/00/00"
       :departure_time              => nil, #"00:00"
       :arrival_time                => nil,   #"00:00"
+      :od_trips                    => false, # is true, trRouting will calculate travel time for each od trips (if its cache include od trips)
+      :od_trips_period             => nil, # to use for od trips
+      :od_trips_activities         => nil, # to use for od trips
+      :od_trips_age_groups         => nil, # to use for od trips
+      :od_trips_genders            => nil, # to use for od trips
+      :od_trips_occupations        => nil, # to use for od trips
+      :od_trips_modes              => nil, # to use for od trips
       :return_all_stops_result     => false,
       :max_number_of_transfers     => 9999,
       :min_waiting_time            => 3,
@@ -94,25 +101,65 @@ module TrOSRMRouting
     
     if options[:mode] == :transit
       
-      departure_date                   = options[:departure_date]
-      arrival_date                     = options[:arrival_date]
-      departure_time                   = options[:departure_time]
-      arrival_time                     = options[:arrival_time]
-      return_all_stops_result          = options[:return_all_stops_result]
-      detailed                         = options[:detailed]
-      min_waiting_time                 = options[:min_waiting_time]
-      max_travel_time_minutes          = options[:max_travel_time_minutes] || 9999
-      max_number_of_transfers          = options[:max_number_of_transfers]
-      only_service_ids                 = options[:only_service_ids]
-      by_num_transfers                 = options[:by_number_of_transfers]
-      transfer_penalty_minutes         = options[:transfer_penalty_minutes] || 0
       max_access_travel_time_minutes   = options[:max_access_travel_time_seconds]   ? (options[:max_access_travel_time_seconds].to_f   / 60).ceil : 20
       max_egress_travel_time_minutes   = options[:max_egress_travel_time_seconds]   ? (options[:max_egress_travel_time_seconds].to_f   / 60).ceil : max_access_travel_time_minutes
       max_transfer_travel_time_minutes = options[:max_transfer_travel_time_seconds] ? (options[:max_transfer_travel_time_seconds].to_f / 60).ceil : 20
+      
+      query_parameters_array = []
+      
       if options[:starting_stop_id]
-        routing_query = "#{api_url}?starting_stop_id=#{options[:starting_stop_id]}&destination=#{destination_geography ? destination_geography.lat : 0},#{destination_geography ? destination_geography.lon : 0}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&by_num_transfers=#{by_num_transfers ? 'true' : 'false' }&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
-      elsif geographies.any?
-        routing_query = "#{api_url}?origin=#{origin_geography.lat},#{origin_geography.lon}&destination=#{destination_geography.lat},#{destination_geography.lon}&date=#{departure_date || arrival_date}&time=#{departure_time || arrival_time}&return_all_stops_result=#{ return_all_stops_result ? 'true' : 'false' }&reverse=#{ arrival_time ? 'true' : 'false' }&detailed=#{ detailed ? 'true' : 'false' }&max_number_of_transfers=#{ max_number_of_transfers }&min_waiting_time=#{ min_waiting_time }&max_travel_time=#{ max_travel_time_minutes }&max_access_travel_time_minutes=#{max_access_travel_time_minutes}&max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}&max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}&by_num_transfers=#{by_num_transfers ? 'true' : 'false' }&transfer_penalty_minutes=#{ transfer_penalty_minutes}#{ only_service_ids && only_service_ids.any? ? '&only_service_ids=' + only_service_ids.join(',') : ''}"
+        query_parameters_array.push "starting_stop_id=#{options[:starting_stop_id]}"
+      else
+        query_parameters_array.push "origin=#{origin_geography.lat},#{origin_geography.lon}"
+      end
+      query_parameters_array.push "destination=#{destination_geography ? destination_geography.lat : 0},#{destination_geography ? destination_geography.lon : 0}"
+      query_parameters_array.push "date=#{options[:departure_date] || options[:arrival_date]}"
+      query_parameters_array.push "time=#{options[:departure_time] || options[:arrival_time]}"
+      query_parameters_array.push "return_all_stops_result=#{ options[:return_all_stops_result] ? 'true' : 'false' }"
+      query_parameters_array.push "reverse=#{ options[:arrival_time] ? 'true' : 'false' }"
+      query_parameters_array.push "detailed=#{ options[:detailed] ? 'true' : 'false' }"
+      query_parameters_array.push "max_number_of_transfers=#{ options[:max_number_of_transfers] }"
+      query_parameters_array.push "min_waiting_time=#{ options[:min_waiting_time] }"
+      query_parameters_array.push "max_travel_time=#{ options[:max_travel_time_minutes] || 9999 }"
+      query_parameters_array.push "max_access_travel_time_minutes=#{max_access_travel_time_minutes}"
+      query_parameters_array.push "max_egress_travel_time_minutes=#{max_egress_travel_time_minutes}"
+      query_parameters_array.push "max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}"
+      query_parameters_array.push "by_num_transfers=#{options[:by_number_of_transfers] ? 'true' : 'false' }"
+      query_parameters_array.push "od_trips=#{options[:od_trips] ? 'true' : 'false' }"
+      
+      if transfer_penalty_minutes >= 0
+        query_parameters_array.push "transfer_penalty_minutes=#{ options[:transfer_penalty_minutes] }"
+      end
+      if options[:only_service_ids] && options[:only_service_ids].any?
+        query_parameters_array.push "&only_service_ids=#{options[:only_service_ids].join(',')}"
+      end
+      
+      if options[:od_trips_period] && options[:od_trips_period].any?
+        query_parameters_array.push "&od_trips_period=#{options[:od_trips_period].join(',')}"
+      end
+      
+      if options[:od_trips_activities] && options[:od_trips_activities].any?
+        query_parameters_array.push "&od_trips_activities=#{options[:od_trips_activities].join(',')}"
+      end
+      
+      if options[:od_trips_age_groups] && options[:od_trips_age_groups].any?
+        query_parameters_array.push "&od_trips_age_groups=#{options[:od_trips_age_groups].join(',')}"
+      end
+      
+      if options[:od_trips_genders] && options[:od_trips_genders].any?
+        query_parameters_array.push "&od_trips_genders=#{options[:od_trips_genders].join(',')}"
+      end
+      
+      if options[:od_trips_occupations] && options[:od_trips_occupations].any?
+        query_parameters_array.push "&od_trips_occupations=#{options[:od_trips_occupations].join(',')}"
+      end
+      
+      if options[:od_trips_modes] && options[:od_trips_modes].any?
+        query_parameters_array.push "&od_trips_modes=#{options[:od_trips_modes].join(',')}"
+      end
+      
+      if options[:starting_stop_id] || geographies.any?
+        routing_query = "#{api_url}?#{query_parameters_array.join('&')}"
       else
         raise "no geographies provided"
       end
@@ -120,7 +167,7 @@ module TrOSRMRouting
       #puts open(routing_query).read
       routing = Oj.load(open(routing_query).read) rescue nil
       #ap routing
-      if routing && (routing["status"] || routing["stops"])
+      if routing && ((routing["status"] && routing["status"] == "success") || routing["stops"] || routing["od_trips"])
         
         routing["query"] = routing_query
         return routing
