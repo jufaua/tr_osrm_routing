@@ -131,31 +131,31 @@ module TrOSRMRouting
         query_parameters_array.push "transfer_penalty_minutes=#{ options[:transfer_penalty_minutes] }"
       end
       if options[:only_service_ids] && options[:only_service_ids].any?
-        query_parameters_array.push "&only_service_ids=#{options[:only_service_ids].join(',')}"
+        query_parameters_array.push "only_service_ids=#{options[:only_service_ids].join(',')}"
       end
       
       if options[:od_trips_periods] && options[:od_trips_periods].any?
-        query_parameters_array.push "&od_trips_periods=#{options[:od_trips_periods].join(',')}"
+        query_parameters_array.push "od_trips_periods=#{options[:od_trips_periods].join(',')}"
       end
       
       if options[:od_trips_activities] && options[:od_trips_activities].any?
-        query_parameters_array.push "&od_trips_activities=#{options[:od_trips_activities].join(',')}"
+        query_parameters_array.push "od_trips_activities=#{options[:od_trips_activities].join(',')}"
       end
       
       if options[:od_trips_age_groups] && options[:od_trips_age_groups].any?
-        query_parameters_array.push "&od_trips_age_groups=#{options[:od_trips_age_groups].join(',')}"
+        query_parameters_array.push "od_trips_age_groups=#{options[:od_trips_age_groups].join(',')}"
       end
       
       if options[:od_trips_genders] && options[:od_trips_genders].any?
-        query_parameters_array.push "&od_trips_genders=#{options[:od_trips_genders].join(',')}"
+        query_parameters_array.push "od_trips_genders=#{options[:od_trips_genders].join(',')}"
       end
       
       if options[:od_trips_occupations] && options[:od_trips_occupations].any?
-        query_parameters_array.push "&od_trips_occupations=#{options[:od_trips_occupations].join(',')}"
+        query_parameters_array.push "od_trips_occupations=#{options[:od_trips_occupations].join(',')}"
       end
       
       if options[:od_trips_modes] && options[:od_trips_modes].any?
-        query_parameters_array.push "&od_trips_modes=#{options[:od_trips_modes].join(',')}"
+        query_parameters_array.push "od_trips_modes=#{options[:od_trips_modes].join(',')}"
       end
       
       if options[:starting_stop_id] || geographies.any?
