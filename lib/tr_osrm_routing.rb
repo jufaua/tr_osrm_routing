@@ -171,7 +171,7 @@ module TrOSRMRouting
       #puts open(routing_query).read
       routing = Oj.load(open(routing_query).read) rescue nil
       #ap routing
-      if routing && ((routing["status"] && routing["status"] == "success") || routing["stops"] || routing["od_trips"])
+      if routing && ((routing["status"] && routing["status"] == "success") || routing["stops"] || routing["odTrips"])
         
         routing["query"] = routing_query
         return routing
