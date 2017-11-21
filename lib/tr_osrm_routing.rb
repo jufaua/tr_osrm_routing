@@ -131,7 +131,7 @@ module TrOSRMRouting
       if options[:transfer_penalty_minutes] >= 0
         query_parameters_array.push "transfer_penalty_minutes=#{ options[:transfer_penalty_minutes] }"
       end
-      if options[:od_trips_sample_size] >= 1
+      if options[:od_trips_sample_size] && options[:od_trips_sample_size] >= 1
         query_parameters_array.push "od_trips_sample_size=#{ options[:od_trips_sample_size] }"
       end
       if options[:only_service_ids] && options[:only_service_ids].any?
