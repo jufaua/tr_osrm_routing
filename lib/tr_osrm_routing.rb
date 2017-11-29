@@ -169,7 +169,7 @@ module TrOSRMRouting
       end
       #puts routing_query
       #puts open(routing_query).read
-      routing = Oj.load(open(routing_query, :read_timeout => 600, :open_timeout => 600).read) rescue nil
+      routing = Oj.load(open(routing_query, :read_timeout => 3600, :open_timeout => 3600).read) rescue nil
       #ap routing
       if routing && ((routing["status"] && routing["status"] == "success") || routing["stops"] || routing["odTrips"])
         
