@@ -35,6 +35,12 @@ module TrOSRMRouting
       :match_radius                => 20,
       :transfer_penalty_minutes    => 0,
       :only_service_ids            => nil,
+      :only_route_ids              => nil,
+      :only_route_type_ids         => nil,
+      :only_agency_ids             => nil,
+      :except_route_ids              => nil,
+      :except_route_type_ids         => nil,
+      :except_agency_ids             => nil,
       :by_number_of_transfers      => false,
       :max_travel_time_minutes     => nil,
       :max_access_travel_time_seconds   => 1200,
@@ -160,6 +166,30 @@ module TrOSRMRouting
       
       if options[:od_trips_modes] && options[:od_trips_modes].any?
         query_parameters_array.push "od_trips_modes=#{options[:od_trips_modes].join(',')}"
+      end
+      
+      if options[:only_route_ids] && options[:only_route_ids].any?
+        query_parameters_array.push "only_route_ids=#{options[:only_route_ids].join(',')}"
+      end
+      
+      if options[:only_agency_ids] && options[:only_agency_ids].any?
+        query_parameters_array.push "only_agency_ids=#{options[:only_agency_ids].join(',')}"
+      end
+      
+      if options[:only_route_type_ids] && options[:only_route_type_ids].any?
+        query_parameters_array.push "only_route_type_ids=#{options[:only_route_type_ids].join(',')}"
+      end
+      
+      if options[:except_route_ids] && options[:except_route_ids].any?
+        query_parameters_array.push "except_route_ids=#{options[:except_route_ids].join(',')}"
+      end
+      
+      if options[:except_agency_ids] && options[:except_agency_ids].any?
+        query_parameters_array.push "except_agency_ids=#{options[:except_agency_ids].join(',')}"
+      end
+      
+      if options[:except_route_type_ids] && options[:except_route_type_ids].any?
+        query_parameters_array.push "except_route_type_ids=#{options[:except_route_type_ids].join(',')}"
       end
       
       if options[:starting_stop_id] || geographies.any?
