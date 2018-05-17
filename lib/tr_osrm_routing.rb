@@ -46,6 +46,11 @@ module TrOSRMRouting
       :max_access_travel_time_seconds   => 1200,
       :max_egress_travel_time_seconds   => 1200,
       :max_transfer_travel_time_seconds => 1200,
+      :alternatives                => false,
+      :max_alternatives            => 100,
+      :alternatives_max_travel_time_ratio => 1.5,
+      :alternatives_min_max_travel_time_minutes => 30,
+      :alternatives_max_added_travel_time_minutes => 30,
       :matching_legs               => false, # fetch matching legs (distance and duration of each leg)
       :server                      => nil # Optional TrOSRMRoutingServer object, takes precedence over mode and api_url
     }
@@ -133,6 +138,30 @@ module TrOSRMRouting
       query_parameters_array.push "max_transfer_travel_time_minutes=#{max_transfer_travel_time_minutes}"
       query_parameters_array.push "by_num_transfers=#{options[:by_number_of_transfers] ? 'true' : 'false' }"
       query_parameters_array.push "od_trips=#{options[:od_trips] ? 'true' : 'false' }"
+      
+      if options[:od_trip_id]
+         query_parameters_array.push "od_tripId=#{options[:od_trip_id]}"
+      end
+      
+      if options[:alternatives] == true || options[:alternatives] == 1
+        query_parameters_array.push "alternatives=1"
+      end
+      
+      if options[:max_alternatives]
+        query_parameters_array.push "max_alternatives=#{ options[:max_alternatives] }"
+      end
+      
+      if options[:alternatives_max_travel_time_ratio]
+        query_parameters_array.push "alternatives_max_travel_time_ratio=#{ options[:alternatives_max_travel_time_ratio] }"
+      end
+      
+      if options[:alternatives_min_max_travel_time_minutes]
+        query_parameters_array.push "alternatives_min_max_travel_time_minutes=#{ options[:alternatives_min_max_travel_time_minutes] }"
+      end
+      
+      if options[:alternatives_max_added_travel_time_minutes]
+        query_parameters_array.push "alternatives_max_added_travel_time_minutes=#{ options[:alternatives_max_added_travel_time_minutes] }"
+      end
       
       if options[:transfer_penalty_minutes] >= 0
         query_parameters_array.push "transfer_penalty_minutes=#{ options[:transfer_penalty_minutes] }"
