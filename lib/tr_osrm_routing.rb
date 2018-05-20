@@ -140,7 +140,7 @@ module TrOSRMRouting
       query_parameters_array.push "od_trips=#{options[:od_trips] ? 'true' : 'false' }"
       
       if options[:od_trip_id]
-         query_parameters_array.push "od_tripId=#{options[:od_trip_id]}"
+         query_parameters_array.push "od_trip_id=#{options[:od_trip_id]}"
       end
       
       if options[:alternatives] == true || options[:alternatives] == 1
